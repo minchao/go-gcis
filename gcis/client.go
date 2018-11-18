@@ -13,15 +13,25 @@ import (
 
 const (
 	libraryVersion   = "0.0.1"
-	defaultBaseURL   = "https://data.gcis.nat.gov.tw"
+	defaultBaseURL   = "http://data.gcis.nat.gov.tw/"
 	defaultUserAgent = "go-gcis/" + libraryVersion
 )
+
+type service struct {
+	client *Client
+}
 
 type Client struct {
 	HTTPClient *http.Client
 
 	BaseURL   *url.URL
 	UserAgent string
+
+	// Reuse a single struct instead of allocating one for each service on the heap.
+	common service
+
+	// Services used for talking to different parts of the GCIS API.
+	Company *CompanyService
 }
 
 // NewClient returns a new GCIS API client.
@@ -29,9 +39,13 @@ func NewClient() *Client {
 	baseURL, _ := url.Parse(defaultBaseURL)
 
 	c := &Client{
-		BaseURL:   baseURL,
-		UserAgent: defaultUserAgent,
+		HTTPClient: http.DefaultClient,
+		BaseURL:    baseURL,
+		UserAgent:  defaultUserAgent,
 	}
+
+	c.common.client = c
+	c.Company = (*CompanyService)(&c.common)
 
 	return c
 }
@@ -42,10 +56,10 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	if err != nil {
 		return nil, err
 	}
-
 	u := c.BaseURL.ResolveReference(rel)
+	uStr := strings.Replace(u.String(), " ", "%20", -1)
 
-	req, err := http.NewRequest(method, u.String(), nil)
+	req, err := http.NewRequest(method, uStr, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -119,29 +133,31 @@ func (e *ErrorResponse) Error() string {
 
 // CheckResponse checks the API response for errors.
 func CheckResponse(r *http.Response) error {
-	c := r.StatusCode
-	if c == 200 {
-		if r.ContentLength == 0 {
-			return &ErrorResponse{
-				Response: r,
-				Message:  "unexpected empty body",
-			}
-		}
-		if ct := r.Header.Get("Content-type"); !strings.HasPrefix(ct, "application/json") {
-			err := &ErrorResponse{
-				Response: r,
-				Message:  "unexpected body",
-			}
-
-			data, _ := ioutil.ReadAll(r.Body)
-			if len(data) > 0 {
-				err.Message = string(data)
-			}
-
-			return err
-		}
-		return nil
-	}
 	// GCIS API always return status code 200
-	return fmt.Errorf("unexpected status code: %d", c)
+	if code := r.StatusCode; code != 200 {
+		return &ErrorResponse{
+			Response: r,
+			Message:  fmt.Sprintf("unexpected status code: %d", code),
+		}
+	}
+	if r.ContentLength == 0 {
+		return &ErrorResponse{
+			Response: r,
+			Message:  "unexpected empty body",
+		}
+	}
+	if ct := r.Header.Get("Content-type"); !strings.HasPrefix(ct, "application/json") {
+		err := &ErrorResponse{
+			Response: r,
+			Message:  "unexpected body",
+		}
+
+		data, _ := ioutil.ReadAll(r.Body)
+		if len(data) > 0 {
+			err.Message = string(data)
+		}
+
+		return err
+	}
+	return nil
 }

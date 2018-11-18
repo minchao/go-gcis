@@ -7,10 +7,11 @@ go:
 - tip
 
 install:
-- make deps
+- make install
 
 script:
 - make lint
+- make test
 
 matrix:
   allow_failures:
