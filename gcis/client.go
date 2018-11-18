@@ -13,7 +13,7 @@ import (
 
 const (
 	libraryVersion   = "0.0.1"
-	defaultBaseURL   = "http://data.gcis.nat.gov.tw/"
+	defaultBaseURL   = "https://data.gcis.nat.gov.tw/"
 	defaultUserAgent = "go-gcis/" + libraryVersion
 )
 
