@@ -6,11 +6,15 @@ go-gcis is a Go client library for accessing the [GCIS API](https://data.gcis.na
 
 ## Getting started
 
+Use `go get` to download the library into your $GOPATH.
+
 ```bash
 go get -u https://github.com/minchao/go-gcis
 ```
 
 ### Usage
+
+This example shows how to make a request to the GCIS API.
 
 ```go
 package main
