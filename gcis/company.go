@@ -31,7 +31,7 @@ type BasicInformationOutput struct {
 }
 
 // GetBasicInformation fetches the basic information of company by accounting no.
-func (s *CompanyService) GetBasicInformation(ctx context.Context, input BasicInformationInput) (*BasicInformationOutput, *Response, error) {
+func (s *CompanyService) GetBasicInformation(ctx context.Context, input *BasicInformationInput) (*BasicInformationOutput, *Response, error) {
 	u := fmt.Sprintf("od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6?$format=json&$filter=Business_Accounting_NO eq %s", input.BusinessAccountingNO)
 
 	req, err := s.client.NewRequest("GET", u, nil)

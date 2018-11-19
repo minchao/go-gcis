@@ -19,7 +19,7 @@ func TestCompanyService_GetBasicInformation(t *testing.T) {
 		w.Write(companyBasicInformationJSON)
 	})
 
-	got, _, err := client.Company.GetBasicInformation(context.Background(), BasicInformationInput{"20828393"})
+	got, _, err := client.Company.GetBasicInformation(context.Background(), &BasicInformationInput{"20828393"})
 	if err != nil {
 		t.Errorf("Company.GetBasicInformation returned error: %v", err)
 	}
