@@ -117,18 +117,19 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 	return response, err
 }
 
-// ErrorResponse reports one or more errors caused by an API request.
+// ErrorResponse reports error caused by an API request.
 type ErrorResponse struct {
-	Response *http.Response
-	Message  string
+	Message string
 }
 
 func (e *ErrorResponse) Error() string {
-	return fmt.Sprintf("%v %v: %d %s",
-		e.Response.Request.Method,
-		e.Response.Request.URL,
-		e.Response.StatusCode,
-		e.Message)
+	return e.Message
+}
+
+type NotFoundError ErrorResponse
+
+func (e *NotFoundError) Error() string {
+	return e.Message
 }
 
 // CheckResponse checks the API response for errors.
@@ -136,20 +137,17 @@ func CheckResponse(r *http.Response) error {
 	// GCIS API always return status code 200
 	if code := r.StatusCode; code != 200 {
 		return &ErrorResponse{
-			Response: r,
-			Message:  fmt.Sprintf("unexpected status code: %d", code),
+			Message: fmt.Sprintf("unexpected status code: %d", code),
 		}
 	}
 	if r.ContentLength == 0 {
-		return &ErrorResponse{
-			Response: r,
-			Message:  "unexpected empty body",
+		return &NotFoundError{
+			Message: "not found",
 		}
 	}
 	if ct := r.Header.Get("Content-type"); !strings.HasPrefix(ct, "application/json") {
 		err := &ErrorResponse{
-			Response: r,
-			Message:  "unexpected body",
+			Message: "unexpected body",
 		}
 
 		data, _ := ioutil.ReadAll(r.Body)

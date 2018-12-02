@@ -97,7 +97,7 @@ func TestCheckResponse(t *testing.T) {
 		{
 			http.StatusOK,
 			"",
-			"unexpected empty body",
+			"not found",
 		},
 		{
 			http.StatusOK,
@@ -123,11 +123,11 @@ func TestCheckResponse(t *testing.T) {
 			Body:          ioutil.NopCloser(strings.NewReader(test.body)),
 			ContentLength: int64(len(test.body)),
 		}
-		err := CheckResponse(res).(*ErrorResponse)
+		err := CheckResponse(res)
 		if err == nil {
 			t.Errorf("(%v) Expected error response", i)
 		}
-		if got := err.Message; test.want != got {
+		if got := err.Error(); test.want != got {
 			t.Errorf("(%v) Expected: %v, got: %v", i, test.want, got)
 		}
 	}
