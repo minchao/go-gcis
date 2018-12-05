@@ -69,3 +69,64 @@ var (
 		SusEndDate:               "",
 	}
 )
+
+func TestCompanyService_GetCompanyByKeyword(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/od/data/api/6BBA2268-1367-4B42-9CCA-BC17499EBE8C", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write(companyByKeywordJSON)
+	})
+
+	got, _, err := client.Company.GetCompanyByKeyword(context.Background(),
+		&CompanyByKeywordInput{
+			CompanyName:   "台灣積體電路製造股份有限公司",
+			CompanyStatus: "01",
+		})
+	if err != nil {
+		t.Errorf("Company.GetCompanyByKeyword returned error: %v", err)
+	}
+	if want := companyByKeyword; !reflect.DeepEqual(got, want) {
+		t.Errorf("Company.GetCompanyByKeyword = %+v, want %+v", got, want)
+	}
+}
+
+var (
+	companyByKeywordJSON = []byte(`[
+  {
+    "Business_Accounting_NO": "22099131",
+    "Company_Name": "台灣積體電路製造股份有限公司",
+    "Company_Status": "01",
+    "Company_Status_Desc": "核准設立",
+    "Capital_Stock_Amount": 270500000000,
+    "Paid_In_Capital_Amount": 259303804580,
+    "Responsible_Name": "LOu Te-YOn Mark(劉德音)",
+    "Register_Organization": "05",
+    "Register_Organization_Desc": "科技部新竹科學工業園區管理局",
+    "Company_Location": "新竹市力行六路8號",
+    "Company_Setup_Date": "0760221",
+    "Change_Of_Approval_Data": "1071128"
+  }
+]`)
+
+	companyByKeyword = []CompanyByKeywordOutput{
+		{
+			BusinessAccountingNO:     "22099131",
+			CompanyName:              "台灣積體電路製造股份有限公司",
+			CompanyStatus:            "01",
+			CompanyStatusDesc:        "核准設立",
+			CapitalStockAmount:       270500000000,
+			PaidInCapitalAmount:      259303804580,
+			ResponsibleName:          "LOu Te-YOn Mark(劉德音)",
+			RegisterOrganization:     "05",
+			RegisterOrganizationDesc: "科技部新竹科學工業園區管理局",
+			CompanyLocation:          "新竹市力行六路8號",
+			CompanySetupDate:         "0760221",
+			ChangeOfApprovalData:     "1071128",
+		},
+	}
+)
