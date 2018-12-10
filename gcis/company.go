@@ -48,6 +48,39 @@ func (s *CompanyService) GetBasicInformation(ctx context.Context, input *BasicIn
 	return &outputs[0], resp, nil
 }
 
+type BasicInformationAndBusinessOutput struct {
+	BusinessAccountingNO string        `json:"Business_Accounting_NO"`
+	CompanyName          string        `json:"Company_Name"`
+	CompanyStatus        string        `json:"Company_Status"`
+	CompanyStatusDesc    string        `json:"Company_Status_Desc"`
+	CompanySetupDate     string        `json:"Company_Setup_Date"`
+	CmpBusiness          []CmpBusiness `json:"Cmp_Business"`
+}
+
+type CmpBusiness struct {
+	BusinessSeqNO    string `json:"Business_Seq_NO"`
+	BusinessItem     string `json:"Business_Item"`
+	BusinessItemDesc string `json:"business_item_desc"`
+}
+
+// GetBasicInformationAndBusiness fetches the basic information and business of company by accounting no.
+func (s *CompanyService) GetBasicInformationAndBusiness(ctx context.Context, input *BasicInformationInput) (*BasicInformationAndBusinessOutput, *Response, error) {
+	u := fmt.Sprintf("od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C?$format=json&$filter=Business_Accounting_NO eq %s", input.BusinessAccountingNO)
+
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	outputs := make([]BasicInformationAndBusinessOutput, 1)
+	resp, err := s.client.Do(ctx, req, &outputs)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &outputs[0], resp, nil
+}
+
 type CompanyByKeywordInput struct {
 	CompanyName   string
 	CompanyStatus string

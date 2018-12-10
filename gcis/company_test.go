@@ -30,7 +30,7 @@ func TestCompanyService_GetBasicInformation(t *testing.T) {
 
 var (
 	companyBasicInformationJSON = []byte(`[
-{
+  {
     "Business_Accounting_NO": "20828393",
     "Company_Status_Desc": "核准設立",
     "Company_Name": "宏碁股份有限公司",
@@ -67,6 +67,61 @@ var (
 		SusAppDate:               "",
 		SusBegDate:               "",
 		SusEndDate:               "",
+	}
+)
+
+func TestCompanyService_GetBasicInformationAndBusiness(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write(companyBasicInformationAndBusinessJSON)
+	})
+
+	got, _, err := client.Company.GetBasicInformationAndBusiness(context.Background(), &BasicInformationInput{"20828393"})
+	if err != nil {
+		t.Errorf("Company.GetBasicInformationAndBusiness returned error: %v", err)
+	}
+	if want := companyBasicInformationAndBusiness; !reflect.DeepEqual(got, want) {
+		t.Errorf("Company.GetBasicInformationAndBusiness = %+v, want %+v", got, want)
+	}
+}
+
+var (
+	companyBasicInformationAndBusinessJSON = []byte(`[
+  {
+    "Business_Accounting_NO": "20828393",
+    "Company_Name": "宏碁股份有限公司",
+    "Company_Status": "01",
+    "Company_Status_Desc": "核准設立",
+    "Company_Setup_Date": "0680718",
+    "Cmp_Business": [
+      {
+        "Business_Seq_NO": "0001",
+        "Business_Item": "F113050",
+        "Business_Item_Desc": "電腦及事務性機器設備批發業"
+      }
+    ]
+  }
+]`)
+
+	companyBasicInformationAndBusiness = &BasicInformationAndBusinessOutput{
+		BusinessAccountingNO: "20828393",
+		CompanyName:          "宏碁股份有限公司",
+		CompanyStatus:        "01",
+		CompanyStatusDesc:    "核准設立",
+		CompanySetupDate:     "0680718",
+		CmpBusiness: []CmpBusiness{
+			{
+				BusinessSeqNO:    "0001",
+				BusinessItem:     "F113050",
+				BusinessItemDesc: "電腦及事務性機器設備批發業",
+			},
+		},
 	}
 )
 
