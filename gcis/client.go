@@ -125,6 +125,19 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 	return response, err
 }
 
+func (c *Client) get(ctx context.Context, urlStr string, v interface{}) (*Response, error) {
+	req, err := c.NewRequest("GET", urlStr, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Do(ctx, req, v)
+	if err != nil {
+		return resp, err
+	}
+	return resp, nil
+}
+
 // ErrorResponse reports error caused by an API request.
 type ErrorResponse struct {
 	Message string
