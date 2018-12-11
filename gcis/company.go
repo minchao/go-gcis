@@ -41,7 +41,7 @@ func (s *CompanyService) GetBasicInformation(ctx context.Context, input *BasicIn
 
 	outputs := make([]BasicInformationOutput, 1)
 	resp, err := s.client.Do(ctx, req, &outputs)
-	if err != nil {
+	if err != nil || len(outputs) == 0 {
 		return nil, resp, err
 	}
 
@@ -74,7 +74,7 @@ func (s *CompanyService) GetBasicInformationAndBusiness(ctx context.Context, inp
 
 	outputs := make([]BasicInformationAndBusinessOutput, 1)
 	resp, err := s.client.Do(ctx, req, &outputs)
-	if err != nil {
+	if err != nil || len(outputs) == 0 {
 		return nil, resp, err
 	}
 

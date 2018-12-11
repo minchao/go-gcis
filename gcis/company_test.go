@@ -28,6 +28,26 @@ func TestCompanyService_GetBasicInformation(t *testing.T) {
 	}
 }
 
+func TestCompanyService_GetBasicInformation_notFound(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+	})
+
+	got, _, err := client.Company.GetBasicInformation(context.Background(), &BasicInformationInput{"20828393"})
+	if err != nil {
+		t.Errorf("Company.GetBasicInformation returned error: %v", err)
+	}
+	if got != nil {
+		t.Errorf("Company.GetBasicInformation = %+v, want nil", got)
+	}
+}
+
 var (
 	companyBasicInformationJSON = []byte(`[
   {
@@ -125,6 +145,26 @@ var (
 	}
 )
 
+func TestCompanyService_GetBasicInformationAndBusiness_notFound(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+	})
+
+	got, _, err := client.Company.GetBasicInformationAndBusiness(context.Background(), &BasicInformationInput{"20828393"})
+	if err != nil {
+		t.Errorf("Company.GetBasicInformationAndBusiness returned error: %v", err)
+	}
+	if got != nil {
+		t.Errorf("Company.GetBasicInformationAndBusiness = %+v, want nil", got)
+	}
+}
+
 func TestCompanyService_GetCompanyByKeyword(t *testing.T) {
 	setup()
 	defer teardown()
@@ -185,3 +225,27 @@ var (
 		},
 	}
 )
+
+func TestCompanyService_GetCompanyByKeyword_notFound(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/od/data/api/6BBA2268-1367-4B42-9CCA-BC17499EBE8C", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+	})
+
+	got, _, err := client.Company.GetCompanyByKeyword(context.Background(),
+		&CompanyByKeywordInput{
+			CompanyName:   "台灣積體電路製造股份有限公司",
+			CompanyStatus: "01",
+		})
+	if err != nil {
+		t.Errorf("Company.GetCompanyByKeyword returned error: %v", err)
+	}
+	if want := []CompanyByKeywordOutput{}; !reflect.DeepEqual(got, want) {
+		t.Errorf("Company.GetCompanyByKeyword = %+v, want %+v", got, want)
+	}
+}

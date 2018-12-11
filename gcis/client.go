@@ -107,7 +107,15 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 		if w, ok := v.(io.Writer); ok {
 			io.Copy(w, resp.Body)
 		} else {
-			err = json.NewDecoder(resp.Body).Decode(v)
+			var body io.Reader
+			if resp.ContentLength == 0 {
+				// Workaround for empty body
+				body = strings.NewReader("[]")
+			} else {
+				body = resp.Body
+			}
+
+			err = json.NewDecoder(body).Decode(v)
 			if err == io.EOF {
 				err = nil // ignore EOF errors caused by empty response body
 			}
@@ -126,23 +134,12 @@ func (e *ErrorResponse) Error() string {
 	return e.Message
 }
 
-type NotFoundError ErrorResponse
-
-func (e *NotFoundError) Error() string {
-	return e.Message
-}
-
 // CheckResponse checks the API response for errors.
 func CheckResponse(r *http.Response) error {
 	// GCIS API always return status code 200
 	if code := r.StatusCode; code != 200 {
 		return &ErrorResponse{
 			Message: fmt.Sprintf("unexpected status code: %d", code),
-		}
-	}
-	if r.ContentLength == 0 {
-		return &NotFoundError{
-			Message: "not found",
 		}
 	}
 	if ct := r.Header.Get("Content-type"); !strings.HasPrefix(ct, "application/json") {

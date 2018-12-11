@@ -97,7 +97,7 @@ func TestCheckResponse(t *testing.T) {
 		{
 			http.StatusOK,
 			"",
-			"not found",
+			"unexpected body",
 		},
 		{
 			http.StatusOK,
