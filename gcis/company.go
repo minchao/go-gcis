@@ -78,8 +78,8 @@ func (s *CompanyService) GetBasicInformationAndBusiness(ctx context.Context, inp
 type CompanyByKeywordInput struct {
 	CompanyName   string
 	CompanyStatus string
-	Skip          int
-	Top           int
+
+	SearchOptions
 }
 
 type CompanyByKeywordOutput struct {
@@ -119,8 +119,8 @@ func (s *CompanyService) SearchByKeyword(ctx context.Context, input *CompanyByKe
 
 type CompanyByResponsibleNameInput struct {
 	ResponsibleName string
-	Skip            int
-	Top             int
+
+	SearchOptions
 }
 
 type CompanyByResponsibleNameOutput struct {

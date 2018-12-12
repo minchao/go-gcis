@@ -169,3 +169,8 @@ func CheckResponse(r *http.Response) error {
 	}
 	return nil
 }
+
+type SearchOptions struct {
+	Skip int
+	Top  int
+}
