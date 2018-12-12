@@ -98,8 +98,8 @@ type CompanyByKeywordOutput struct {
 	ChangeOfApprovalData     string `json:"Change_Of_Approval_Data"`
 }
 
-// GetCompanyByKeyword fetches the information of company by keyword.
-func (s *CompanyService) GetCompanyByKeyword(ctx context.Context, input *CompanyByKeywordInput) ([]CompanyByKeywordOutput, *Response, error) {
+// SearchByKeyword searches the information of companies by keyword.
+func (s *CompanyService) SearchByKeyword(ctx context.Context, input *CompanyByKeywordInput) ([]CompanyByKeywordOutput, *Response, error) {
 	if input.Top == 0 {
 		input.Top = 50
 	}

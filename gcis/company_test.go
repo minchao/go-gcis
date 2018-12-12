@@ -165,7 +165,7 @@ func TestCompanyService_GetBasicInformationAndBusiness_notFound(t *testing.T) {
 	}
 }
 
-func TestCompanyService_GetCompanyByKeyword(t *testing.T) {
+func TestCompanyService_SearchByKeyword(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -177,16 +177,16 @@ func TestCompanyService_GetCompanyByKeyword(t *testing.T) {
 		w.Write(companyByKeywordJSON)
 	})
 
-	got, _, err := client.Company.GetCompanyByKeyword(context.Background(),
+	got, _, err := client.Company.SearchByKeyword(context.Background(),
 		&CompanyByKeywordInput{
 			CompanyName:   "台灣積體電路製造股份有限公司",
 			CompanyStatus: "01",
 		})
 	if err != nil {
-		t.Errorf("Company.GetCompanyByKeyword returned error: %v", err)
+		t.Errorf("Company.SearchByKeyword returned error: %v", err)
 	}
 	if want := companyByKeyword; !reflect.DeepEqual(got, want) {
-		t.Errorf("Company.GetCompanyByKeyword = %+v, want %+v", got, want)
+		t.Errorf("Company.SearchByKeyword = %+v, want %+v", got, want)
 	}
 }
 
@@ -226,7 +226,7 @@ var (
 	}
 )
 
-func TestCompanyService_GetCompanyByKeyword_notFound(t *testing.T) {
+func TestCompanyService_SearchByKeyword_notFound(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -237,16 +237,16 @@ func TestCompanyService_GetCompanyByKeyword_notFound(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	got, _, err := client.Company.GetCompanyByKeyword(context.Background(),
+	got, _, err := client.Company.SearchByKeyword(context.Background(),
 		&CompanyByKeywordInput{
 			CompanyName:   "台灣積體電路製造股份有限公司",
 			CompanyStatus: "01",
 		})
 	if err != nil {
-		t.Errorf("Company.GetCompanyByKeyword returned error: %v", err)
+		t.Errorf("Company.SearchByKeyword returned error: %v", err)
 	}
 	if want := []CompanyByKeywordOutput{}; !reflect.DeepEqual(got, want) {
-		t.Errorf("Company.GetCompanyByKeyword = %+v, want %+v", got, want)
+		t.Errorf("Company.SearchByKeyword = %+v, want %+v", got, want)
 	}
 }
 
