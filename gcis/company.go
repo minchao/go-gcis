@@ -118,7 +118,7 @@ func (s *CompanyService) SearchByKeyword(ctx context.Context, input *CompanyByKe
 }
 
 type CompanyByResponsibleNameInput struct {
-	ResponsibleName string `json:"Responsible_Name"`
+	ResponsibleName string
 	Skip            int
 	Top             int
 }
