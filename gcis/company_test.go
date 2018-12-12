@@ -249,3 +249,43 @@ func TestCompanyService_GetCompanyByKeyword_notFound(t *testing.T) {
 		t.Errorf("Company.GetCompanyByKeyword = %+v, want %+v", got, want)
 	}
 }
+
+func TestCompanyService_SearchByResponsibleName(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/od/data/api/4B61A0F1-458C-43F9-93F3-9FD6DA5E1B08", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write(companyByResponsibleNameJSON)
+	})
+
+	got, _, err := client.Company.SearchByResponsibleName(context.Background(),
+		&CompanyByResponsibleNameInput{
+			ResponsibleName: "劉德音",
+		})
+	if err != nil {
+		t.Errorf("Company.SearchByResponsibleName returned error: %v", err)
+	}
+	if want := companyByResponsibleName; !reflect.DeepEqual(got, want) {
+		t.Errorf("Company.SearchByResponsibleName = %+v, want %+v", got, want)
+	}
+}
+
+var (
+	companyByResponsibleNameJSON = []byte(`[
+  {
+    "Business_Accounting_NO": "22099131",
+    "Company_Name": "台灣積體電路製造股份有限公司"
+  }
+]`)
+
+	companyByResponsibleName = []CompanyByResponsibleNameOutput{
+		{
+			BusinessAccountingNO: "22099131",
+			CompanyName:          "台灣積體電路製造股份有限公司",
+		},
+	}
+)

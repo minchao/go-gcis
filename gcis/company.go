@@ -116,3 +116,32 @@ func (s *CompanyService) GetCompanyByKeyword(ctx context.Context, input *Company
 	}
 	return outputs, resp, nil
 }
+
+type CompanyByResponsibleNameInput struct {
+	ResponsibleName string `json:"Responsible_Name"`
+	Skip            int
+	Top             int
+}
+
+type CompanyByResponsibleNameOutput struct {
+	BusinessAccountingNO string `json:"Business_Accounting_NO"`
+	CompanyName          string `json:"Company_Name"`
+}
+
+// SearchByResponsibleName searches the companies by responsible name.
+func (s *CompanyService) SearchByResponsibleName(ctx context.Context, input *CompanyByResponsibleNameInput) ([]CompanyByResponsibleNameOutput, *Response, error) {
+	if input.Top == 0 {
+		input.Top = 50
+	}
+	u := fmt.Sprintf("od/data/api/4B61A0F1-458C-43F9-93F3-9FD6DA5E1B08?$format=json&$filter=Responsible_Name eq %s&$skip=%d&$top=%d",
+		input.ResponsibleName,
+		input.Skip,
+		input.Top)
+	outputs := make([]CompanyByResponsibleNameOutput, 1)
+
+	resp, err := s.client.get(ctx, u, &outputs)
+	if err != nil {
+		return nil, resp, err
+	}
+	return outputs, resp, nil
+}
