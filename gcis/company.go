@@ -7,11 +7,11 @@ import (
 
 type CompanyService service
 
-type BasicInformationInput struct {
+type CompanyBasicInformationInput struct {
 	BusinessAccountingNO string
 }
 
-type BasicInformationOutput struct {
+type CompanyBasicInformationOutput struct {
 	BusinessAccountingNO     string `json:"Business_Accounting_NO"`
 	CompanyStatusDesc        string `json:"Company_Status_Desc"`
 	CompanyName              string `json:"Company_Name"`
@@ -31,9 +31,9 @@ type BasicInformationOutput struct {
 }
 
 // GetBasicInformation fetches the basic information of company by accounting no.
-func (s *CompanyService) GetBasicInformation(ctx context.Context, input *BasicInformationInput) (*BasicInformationOutput, *Response, error) {
+func (s *CompanyService) GetBasicInformation(ctx context.Context, input *CompanyBasicInformationInput) (*CompanyBasicInformationOutput, *Response, error) {
 	u := fmt.Sprintf("od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6?$format=json&$filter=Business_Accounting_NO eq %s", input.BusinessAccountingNO)
-	outputs := make([]BasicInformationOutput, 1)
+	outputs := make([]CompanyBasicInformationOutput, 1)
 
 	resp, err := s.client.get(ctx, u, &outputs)
 	if err != nil {
@@ -61,7 +61,7 @@ type CmpBusiness struct {
 }
 
 // GetBasicInformationAndBusiness fetches the basic information and business of company by accounting no.
-func (s *CompanyService) GetBasicInformationAndBusiness(ctx context.Context, input *BasicInformationInput) (*BasicInformationAndBusinessOutput, *Response, error) {
+func (s *CompanyService) GetBasicInformationAndBusiness(ctx context.Context, input *CompanyBasicInformationInput) (*BasicInformationAndBusinessOutput, *Response, error) {
 	u := fmt.Sprintf("od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C?$format=json&$filter=Business_Accounting_NO eq %s", input.BusinessAccountingNO)
 	outputs := make([]BasicInformationAndBusinessOutput, 1)
 

@@ -30,7 +30,7 @@ func main() {
 	client := gcis.NewClient()
 
 	info, _, err := client.Company.GetBasicInformation(context.Background(),
-		&gcis.BasicInformationInput{BusinessAccountingNO: "20828393"})
+		&gcis.CompanyBasicInformationInput{BusinessAccountingNO: "20828393"})
 	if err != nil {
 		panic("failed to get company basic information, " + err.Error())
 	}

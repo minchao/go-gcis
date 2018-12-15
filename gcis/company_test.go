@@ -28,7 +28,7 @@ var (
   }
 ]`)
 
-	companyBasicInformation = &BasicInformationOutput{
+	companyBasicInformation = &CompanyBasicInformationOutput{
 		BusinessAccountingNO:     "20828393",
 		CompanyStatusDesc:        "核准設立",
 		CompanyName:              "宏碁股份有限公司",
@@ -54,7 +54,7 @@ func TestCompanyService_GetBasicInformation(t *testing.T) {
 
 	handle(t, "/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6", companyBasicInformationJSON)
 
-	got, _, err := client.Company.GetBasicInformation(context.Background(), &BasicInformationInput{"20828393"})
+	got, _, err := client.Company.GetBasicInformation(context.Background(), &CompanyBasicInformationInput{"20828393"})
 	if err != nil {
 		t.Errorf("Company.GetBasicInformation returned error: %v", err)
 	}
@@ -69,7 +69,7 @@ func TestCompanyService_GetBasicInformation_notFound(t *testing.T) {
 
 	handle(t, "/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6", nil)
 
-	got, _, err := client.Company.GetBasicInformation(context.Background(), &BasicInformationInput{"20828393"})
+	got, _, err := client.Company.GetBasicInformation(context.Background(), &CompanyBasicInformationInput{"20828393"})
 	if err != nil {
 		t.Errorf("Company.GetBasicInformation returned error: %v", err)
 	}
@@ -118,7 +118,7 @@ func TestCompanyService_GetBasicInformationAndBusiness(t *testing.T) {
 
 	handle(t, "/od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C", companyBasicInformationAndBusinessJSON)
 
-	got, _, err := client.Company.GetBasicInformationAndBusiness(context.Background(), &BasicInformationInput{"20828393"})
+	got, _, err := client.Company.GetBasicInformationAndBusiness(context.Background(), &CompanyBasicInformationInput{"20828393"})
 	if err != nil {
 		t.Errorf("Company.GetBasicInformationAndBusiness returned error: %v", err)
 	}
@@ -133,7 +133,7 @@ func TestCompanyService_GetBasicInformationAndBusiness_notFound(t *testing.T) {
 
 	handle(t, "/od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C", nil)
 
-	got, _, err := client.Company.GetBasicInformationAndBusiness(context.Background(), &BasicInformationInput{"20828393"})
+	got, _, err := client.Company.GetBasicInformationAndBusiness(context.Background(), &CompanyBasicInformationInput{"20828393"})
 	if err != nil {
 		t.Errorf("Company.GetBasicInformationAndBusiness returned error: %v", err)
 	}
