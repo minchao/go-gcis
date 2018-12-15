@@ -39,6 +39,16 @@ func teardown() {
 	server.Close()
 }
 
+func handle(t *testing.T, pattern string, body []byte) {
+	mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write(body)
+	})
+}
+
 func testMethod(t *testing.T, r *http.Request, want string) {
 	if got := r.Method; got != want {
 		t.Errorf("Request method: %v, want %v", got, want)

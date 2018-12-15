@@ -2,51 +2,9 @@ package gcis
 
 import (
 	"context"
-	"net/http"
 	"reflect"
 	"testing"
 )
-
-func TestCompanyService_GetBasicInformation(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
-
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write(companyBasicInformationJSON)
-	})
-
-	got, _, err := client.Company.GetBasicInformation(context.Background(), &BasicInformationInput{"20828393"})
-	if err != nil {
-		t.Errorf("Company.GetBasicInformation returned error: %v", err)
-	}
-	if want := companyBasicInformation; !reflect.DeepEqual(got, want) {
-		t.Errorf("Company.GetBasicInformation = %+v, want %+v", got, want)
-	}
-}
-
-func TestCompanyService_GetBasicInformation_notFound(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
-
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
-	})
-
-	got, _, err := client.Company.GetBasicInformation(context.Background(), &BasicInformationInput{"20828393"})
-	if err != nil {
-		t.Errorf("Company.GetBasicInformation returned error: %v", err)
-	}
-	if got != nil {
-		t.Errorf("Company.GetBasicInformation = %+v, want nil", got)
-	}
-}
 
 var (
 	companyBasicInformationJSON = []byte(`[
@@ -90,24 +48,33 @@ var (
 	}
 )
 
-func TestCompanyService_GetBasicInformationAndBusiness(t *testing.T) {
+func TestCompanyService_GetBasicInformation(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
+	handle(t, "/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6", companyBasicInformationJSON)
 
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write(companyBasicInformationAndBusinessJSON)
-	})
-
-	got, _, err := client.Company.GetBasicInformationAndBusiness(context.Background(), &BasicInformationInput{"20828393"})
+	got, _, err := client.Company.GetBasicInformation(context.Background(), &BasicInformationInput{"20828393"})
 	if err != nil {
-		t.Errorf("Company.GetBasicInformationAndBusiness returned error: %v", err)
+		t.Errorf("Company.GetBasicInformation returned error: %v", err)
 	}
-	if want := companyBasicInformationAndBusiness; !reflect.DeepEqual(got, want) {
-		t.Errorf("Company.GetBasicInformationAndBusiness = %+v, want %+v", got, want)
+	if want := companyBasicInformation; !reflect.DeepEqual(got, want) {
+		t.Errorf("Company.GetBasicInformation = %+v, want %+v", got, want)
+	}
+}
+
+func TestCompanyService_GetBasicInformation_notFound(t *testing.T) {
+	setup()
+	defer teardown()
+
+	handle(t, "/od/data/api/5F64D864-61CB-4D0D-8AD9-492047CC1EA6", nil)
+
+	got, _, err := client.Company.GetBasicInformation(context.Background(), &BasicInformationInput{"20828393"})
+	if err != nil {
+		t.Errorf("Company.GetBasicInformation returned error: %v", err)
+	}
+	if got != nil {
+		t.Errorf("Company.GetBasicInformation = %+v, want nil", got)
 	}
 }
 
@@ -145,16 +112,26 @@ var (
 	}
 )
 
+func TestCompanyService_GetBasicInformationAndBusiness(t *testing.T) {
+	setup()
+	defer teardown()
+
+	handle(t, "/od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C", companyBasicInformationAndBusinessJSON)
+
+	got, _, err := client.Company.GetBasicInformationAndBusiness(context.Background(), &BasicInformationInput{"20828393"})
+	if err != nil {
+		t.Errorf("Company.GetBasicInformationAndBusiness returned error: %v", err)
+	}
+	if want := companyBasicInformationAndBusiness; !reflect.DeepEqual(got, want) {
+		t.Errorf("Company.GetBasicInformationAndBusiness = %+v, want %+v", got, want)
+	}
+}
+
 func TestCompanyService_GetBasicInformationAndBusiness_notFound(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
-
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
-	})
+	handle(t, "/od/data/api/236EE382-4942-41A9-BD03-CA0709025E7C", nil)
 
 	got, _, err := client.Company.GetBasicInformationAndBusiness(context.Background(), &BasicInformationInput{"20828393"})
 	if err != nil {
@@ -162,31 +139,6 @@ func TestCompanyService_GetBasicInformationAndBusiness_notFound(t *testing.T) {
 	}
 	if got != nil {
 		t.Errorf("Company.GetBasicInformationAndBusiness = %+v, want nil", got)
-	}
-}
-
-func TestCompanyService_SearchByKeyword(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/od/data/api/6BBA2268-1367-4B42-9CCA-BC17499EBE8C", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
-
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write(companyByKeywordJSON)
-	})
-
-	got, _, err := client.Company.SearchByKeyword(context.Background(),
-		&CompanyByKeywordInput{
-			CompanyName:   "台灣積體電路製造股份有限公司",
-			CompanyStatus: "01",
-		})
-	if err != nil {
-		t.Errorf("Company.SearchByKeyword returned error: %v", err)
-	}
-	if want := companyByKeyword; !reflect.DeepEqual(got, want) {
-		t.Errorf("Company.SearchByKeyword = %+v, want %+v", got, want)
 	}
 }
 
@@ -226,16 +178,30 @@ var (
 	}
 )
 
+func TestCompanyService_SearchByKeyword(t *testing.T) {
+	setup()
+	defer teardown()
+
+	handle(t, "/od/data/api/6BBA2268-1367-4B42-9CCA-BC17499EBE8C", companyByKeywordJSON)
+
+	got, _, err := client.Company.SearchByKeyword(context.Background(),
+		&CompanyByKeywordInput{
+			CompanyName:   "台灣積體電路製造股份有限公司",
+			CompanyStatus: "01",
+		})
+	if err != nil {
+		t.Errorf("Company.SearchByKeyword returned error: %v", err)
+	}
+	if want := companyByKeyword; !reflect.DeepEqual(got, want) {
+		t.Errorf("Company.SearchByKeyword = %+v, want %+v", got, want)
+	}
+}
+
 func TestCompanyService_SearchByKeyword_notFound(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/od/data/api/6BBA2268-1367-4B42-9CCA-BC17499EBE8C", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
-
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
-	})
+	handle(t, "/od/data/api/6BBA2268-1367-4B42-9CCA-BC17499EBE8C", nil)
 
 	got, _, err := client.Company.SearchByKeyword(context.Background(),
 		&CompanyByKeywordInput{
@@ -247,30 +213,6 @@ func TestCompanyService_SearchByKeyword_notFound(t *testing.T) {
 	}
 	if want := []CompanyByKeywordOutput{}; !reflect.DeepEqual(got, want) {
 		t.Errorf("Company.SearchByKeyword = %+v, want %+v", got, want)
-	}
-}
-
-func TestCompanyService_SearchByResponsibleName(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/od/data/api/4B61A0F1-458C-43F9-93F3-9FD6DA5E1B08", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
-
-		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write(companyByResponsibleNameJSON)
-	})
-
-	got, _, err := client.Company.SearchByResponsibleName(context.Background(),
-		&CompanyByResponsibleNameInput{
-			ResponsibleName: "劉德音",
-		})
-	if err != nil {
-		t.Errorf("Company.SearchByResponsibleName returned error: %v", err)
-	}
-	if want := companyByResponsibleName; !reflect.DeepEqual(got, want) {
-		t.Errorf("Company.SearchByResponsibleName = %+v, want %+v", got, want)
 	}
 }
 
@@ -289,3 +231,21 @@ var (
 		},
 	}
 )
+
+func TestCompanyService_SearchByResponsibleName(t *testing.T) {
+	setup()
+	defer teardown()
+
+	handle(t, "/od/data/api/4B61A0F1-458C-43F9-93F3-9FD6DA5E1B08", companyByResponsibleNameJSON)
+
+	got, _, err := client.Company.SearchByResponsibleName(context.Background(),
+		&CompanyByResponsibleNameInput{
+			ResponsibleName: "劉德音",
+		})
+	if err != nil {
+		t.Errorf("Company.SearchByResponsibleName returned error: %v", err)
+	}
+	if want := companyByResponsibleName; !reflect.DeepEqual(got, want) {
+		t.Errorf("Company.SearchByResponsibleName = %+v, want %+v", got, want)
+	}
+}
