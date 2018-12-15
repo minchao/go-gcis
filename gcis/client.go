@@ -31,7 +31,8 @@ type Client struct {
 	common service
 
 	// Services used for talking to different parts of the GCIS API.
-	Company *CompanyService
+	Bussiness *BusinessService
+	Company   *CompanyService
 }
 
 // NewClient returns a new GCIS API client.
@@ -45,6 +46,7 @@ func NewClient() *Client {
 	}
 
 	c.common.client = c
+	c.Bussiness = (*BusinessService)(&c.common)
 	c.Company = (*CompanyService)(&c.common)
 
 	return c
