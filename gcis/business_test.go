@@ -75,3 +75,75 @@ func TestBusinessService_GetBasicInformation_notFound(t *testing.T) {
 		t.Errorf("Bussiness.GetBasicInformation = %+v, want nil", got)
 	}
 }
+
+var (
+	businessBasicInformationAndBusinessJSON = []byte(`[
+  {
+    "President_No": "26459190",
+    "Business_Name": "鼎勝冷榨油行",
+    "Business_Current_Status": "01",
+    "Business_Current_Status_Desc": "核准設立",
+    "Agency": "376610000A",
+    "Agency_Desc": "臺南市政府",
+    "Business_Setup_Approve_Date": "1001012",
+    "Business_Item_Old": [
+      {
+        "Business_Seq_No": "1",
+        "Business_Item": "C105010",
+        "Business_Item_Desc": "食用油脂製造業"
+      }
+    ]
+  }
+]`)
+
+	businessBasicInformationAndBusiness = &BusinessBasicInformationAndBusinessOutput{
+		PresidentNo:               "26459190",
+		BusinessName:              "鼎勝冷榨油行",
+		BusinessCurrentStatus:     "01",
+		BusinessCurrentStatusDesc: "核准設立",
+		Agency:                    "376610000A",
+		AgencyDesc:                "臺南市政府",
+		BusinessSetupApproveDate:  "1001012",
+		BusinessItemOld: []CmpBusiness{
+			{
+				BusinessSeqNO:    "1",
+				BusinessItem:     "C105010",
+				BusinessItemDesc: "食用油脂製造業",
+			},
+		},
+	}
+)
+
+func TestBusinessService_GetBasicInformationAndBusiness(t *testing.T) {
+	setup()
+	defer teardown()
+
+	handle(t, "/od/data/api/F570BC9A-DA4C-4813-8087-FB9CE95F9D38", businessBasicInformationAndBusinessJSON)
+
+	got, _, err := client.Bussiness.GetBasicInformationAndBusiness(context.Background(),
+		&BusinessBasicInformationInput{
+			PresidentNo: "26459190",
+			Agency:      "376610000A",
+		})
+	if err != nil {
+		t.Errorf("Bussiness.GetBasicInformationAndBusiness returned error: %v", err)
+	}
+	if want := businessBasicInformationAndBusiness; !reflect.DeepEqual(got, want) {
+		t.Errorf("Bussiness.GetBasicInformationAndBusiness = %+v, want %+v", got, want)
+	}
+}
+
+func TestBusinessService_GetBasicInformationAndBusiness_notFound(t *testing.T) {
+	setup()
+	defer teardown()
+
+	handle(t, "/od/data/api/F570BC9A-DA4C-4813-8087-FB9CE95F9D38", nil)
+
+	got, _, err := client.Bussiness.GetBasicInformationAndBusiness(context.Background(), &BusinessBasicInformationInput{})
+	if err != nil {
+		t.Errorf("Bussiness.GetBasicInformationAndBusiness returned error: %v", err)
+	}
+	if got != nil {
+		t.Errorf("Bussiness.GetBasicInformationAndBusiness = %+v, want nil", got)
+	}
+}

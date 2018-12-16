@@ -41,3 +41,29 @@ func (s *BusinessService) GetBasicInformation(ctx context.Context, input *Busine
 	}
 	return &outputs[0], resp, nil
 }
+
+type BusinessBasicInformationAndBusinessOutput struct {
+	PresidentNo               string        `json:"President_No"`
+	BusinessName              string        `json:"Business_Name"`
+	BusinessCurrentStatus     string        `json:"Business_Current_Status"`
+	BusinessCurrentStatusDesc string        `json:"Business_Current_Status_Desc"`
+	Agency                    string        `json:"Agency"`
+	AgencyDesc                string        `json:"Agency_Desc"`
+	BusinessSetupApproveDate  string        `json:"Business_Setup_Approve_Date"`
+	BusinessItemOld           []CmpBusiness `json:"Business_Item_Old"`
+}
+
+// GetBasicInformationAndBusiness fetches the basic information and business of company by president no and register agency.
+func (s *BusinessService) GetBasicInformationAndBusiness(ctx context.Context, input *BusinessBasicInformationInput) (*BusinessBasicInformationAndBusinessOutput, *Response, error) {
+	u := fmt.Sprintf("od/data/api/F570BC9A-DA4C-4813-8087-FB9CE95F9D38?$format=json&$filter=President_No eq %s and Agency eq %s", input.PresidentNo, input.Agency)
+	outputs := make([]BusinessBasicInformationAndBusinessOutput, 1)
+
+	resp, err := s.client.get(ctx, u, &outputs)
+	if err != nil {
+		return nil, resp, err
+	}
+	if len(outputs) == 0 {
+		return nil, resp, nil
+	}
+	return &outputs[0], resp, nil
+}
