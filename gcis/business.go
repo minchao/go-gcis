@@ -28,6 +28,7 @@ type BusinessBasicInformationOutput struct {
 	BusinessLastChangeDate       string `json:"Business_Last_Change_Date"`
 }
 
+// GetBasicInformation fetches the basic information of company by president no and register agency.
 func (s *BusinessService) GetBasicInformation(ctx context.Context, input *BusinessBasicInformationInput) (*BusinessBasicInformationOutput, *Response, error) {
 	u := fmt.Sprintf("od/data/api/7E6AFA72-AD6A-46D3-8681-ED77951D912D?$format=json&$filter=President_No eq %s and Agency eq %s", input.PresidentNo, input.Agency)
 	outputs := make([]BusinessBasicInformationOutput, 1)
